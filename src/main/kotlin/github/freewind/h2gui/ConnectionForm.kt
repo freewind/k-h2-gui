@@ -1,11 +1,13 @@
 package github.freewind.h2gui
 
+import com.zaxxer.hikari.HikariDataSource
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.PasswordField
 import javafx.scene.control.TextField
 import javafx.scene.text.TextAlignment
 import tornadofx.*
+import javax.sql.DataSource
 
 
 class ConnectionForm : View() {
@@ -23,18 +25,18 @@ class ConnectionForm : View() {
         }
         row {
             label("JDBC url")
-            textfield().also { jdbcUrl = it }
+            textfield("jdbc:h2:mem:test").also { jdbcUrl = it }
         }
         row {
             label("username")
-            textfield().also { username = it }
+            textfield("sa").also { username = it }
         }
         row {
             label("password")
-            passwordfield().also { password = it }
+            passwordfield("sa").also { password = it }
         }
         row {
-            label("")
+            label()
             hbox {
                 button("test").setOnAction { testConnection(jdbcUrl.text, username.text, password.text) }
                 button("connect").setOnAction { connect(jdbcUrl.text, username.text, password.text) }
@@ -51,11 +53,37 @@ class ConnectionForm : View() {
 
 
 private fun testConnection(url: String, username: String, password: String) {
-    information("testing: url: $url, username: $username, password: $password")
+    val valid = try {
+        val ds = createDataSource(url, username, password)
+        ds.connection.isValid(3)
+    } catch (e: Exception) {
+        error("Failed", e.toString())
+        return
+    }
+    if (valid) {
+        information("Connection is OK")
+    } else {
+        warning("Connection is failed, please check your configuration")
+    }
 }
 
+private fun createDataSource(url: String, username: String, password: String): HikariDataSource {
+    val ds = HikariDataSource()
+    ds.jdbcUrl = url
+    ds.username = username
+    ds.password = password
+    return ds
+}
+
+var ds: DataSource? = null
+
 private fun connect(url: String, username: String, password: String) {
-    information("connecting: url: $url, username: $username, password: $password")
+    ds = createDataSource(url, username, password)
+    openExplorer()
+}
+
+fun openExplorer() {
+    information("will open data explorer")
 }
 
 class ConnectionFormStyle : Stylesheet() {
