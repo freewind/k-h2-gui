@@ -1,4 +1,4 @@
-Kotlin Hello World Demo
-=======================
+H2 GUI
+======
 
-Hello world from kotlin. Open it in IDE and run `Hello.kt`
+H2 GUI to view tables and data.
