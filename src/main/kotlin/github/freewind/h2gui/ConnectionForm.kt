@@ -1,8 +1,10 @@
 package github.freewind.h2gui
 
 import javafx.geometry.Insets
+import javafx.geometry.Pos
 import javafx.scene.control.PasswordField
 import javafx.scene.control.TextField
+import javafx.scene.text.TextAlignment
 import tornadofx.*
 
 
@@ -12,6 +14,13 @@ class ConnectionForm : View() {
     private lateinit var password: PasswordField
 
     override val root = gridpane {
+        row {
+            hbox {
+                label("H2 GUI")
+                addClass(ConnectionFormStyle.title)
+                gridpaneConstraints { this.columnSpan = 2 }
+            }
+        }
         row {
             label("JDBC url")
             textfield().also { jdbcUrl = it }
@@ -49,17 +58,32 @@ private fun connect(url: String, username: String, password: String) {
     information("connecting: url: $url, username: $username, password: $password")
 }
 
-class HelloWorldStyle : Stylesheet() {
+class ConnectionFormStyle : Stylesheet() {
+    companion object {
+        val title by cssclass()
+    }
+
     init {
         root {
             prefWidth = 400.px
             prefHeight = 400.px
         }
+        title {
+            fontSize = 40.px
+            alignment = Pos.CENTER
+        }
     }
 }
 
-class HelloWorldApp : App(ConnectionForm::class, HelloWorldStyle::class)
+class H2GuiApp : App(ConnectionForm::class, ConnectionFormStyle::class)
 
 fun main(args: Array<String>) {
-    launch<HelloWorldApp>()
+    launch<H2GuiApp>()
+}
+
+object H2Gui {
+    @JvmStatic
+    fun main(args: Array<String>) {
+        launch<H2GuiApp>()
+    }
 }
