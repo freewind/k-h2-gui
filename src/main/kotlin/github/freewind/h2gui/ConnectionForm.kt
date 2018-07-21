@@ -5,10 +5,8 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.PasswordField
 import javafx.scene.control.TextField
-import javafx.scene.text.TextAlignment
 import tornadofx.*
 import javax.sql.DataSource
-
 
 class ConnectionForm : View() {
     private lateinit var jdbcUrl: TextField
@@ -39,7 +37,10 @@ class ConnectionForm : View() {
             label()
             hbox {
                 button("test").setOnAction { testConnection(jdbcUrl.text, username.text, password.text) }
-                button("connect").setOnAction { connect(jdbcUrl.text, username.text, password.text) }
+                button("connect").setOnAction {
+                    connect(jdbcUrl.text, username.text, password.text)
+                    replaceWith(Explorer())
+                }
                 spacing = 5.0
             }
         }
@@ -49,6 +50,7 @@ class ConnectionForm : View() {
             vgap = 10.0
         }
     }
+
 }
 
 
@@ -79,11 +81,6 @@ var ds: DataSource? = null
 
 private fun connect(url: String, username: String, password: String) {
     ds = createDataSource(url, username, password)
-    openExplorer()
-}
-
-fun openExplorer() {
-    information("will open data explorer")
 }
 
 class ConnectionFormStyle : Stylesheet() {
