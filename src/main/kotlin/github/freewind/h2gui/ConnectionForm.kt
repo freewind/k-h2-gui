@@ -6,6 +6,7 @@ import javafx.geometry.Pos
 import javafx.scene.control.PasswordField
 import javafx.scene.control.TextField
 import tornadofx.*
+import java.sql.Connection
 import javax.sql.DataSource
 
 class ConnectionForm : View() {
@@ -78,6 +79,10 @@ private fun createDataSource(url: String, username: String, password: String): H
 }
 
 var ds: DataSource? = null
+
+fun <T> useConnection(fn: (Connection) -> T): T? {
+    return ds?.connection?.use(fn)
+}
 
 private fun connect(url: String, username: String, password: String) {
     ds = createDataSource(url, username, password)
