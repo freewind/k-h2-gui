@@ -90,8 +90,8 @@ class ConnectionFormStyle : Stylesheet() {
 
     init {
         root {
-            prefWidth = 400.px
-            prefHeight = 400.px
+            prefWidth = 800.px
+            prefHeight = 600.px
         }
         title {
             fontSize = 40.px
