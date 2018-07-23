@@ -45,9 +45,9 @@ class Explorer : View() {
     }
 
     private fun showTableData(table: String) {
-        mainPanel.replaceChildren(SqlTable().run {
-            this.query("select * from $table")
-            this.root
+        mainPanel.replaceChildren(SqlTable().let { view ->
+            view.query("select * from $table")
+            view.root
         })
     }
 
@@ -136,7 +136,7 @@ fun querySql(sql: String): Pair<List<String>, List<List<Any>>>? {
     return useConnection { conn ->
         conn.createStatement().use { stmt ->
             val rs = stmt.executeQuery(sql)
-            val columnNames = rs.columnNames()
+            val columnNames = rs.displayNames()
             val rows = rs.rows()
             columnNames to rows
         }
@@ -145,7 +145,7 @@ fun querySql(sql: String): Pair<List<String>, List<List<Any>>>? {
 
 fun ResultSet.rows(): List<List<Any>> {
     val rows = mutableListOf<List<Any>>()
-    val columnNames = this.columnNames()
+    val columnNames = this.displayNames()
     while (this.next()) {
         val row = columnNames.map { name -> this.getObject(name) }
         rows.add(row)
@@ -156,4 +156,9 @@ fun ResultSet.rows(): List<List<Any>> {
 fun ResultSet.columnNames(): List<String> {
     val meta = this.metaData
     return (1..meta.columnCount).map { index -> meta.getColumnName(index) }
+}
+
+fun ResultSet.displayNames(): List<String> {
+    val meta = this.metaData
+    return (1..meta.columnCount).map { index -> meta.getColumnLabel(index) }
 }
